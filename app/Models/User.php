@@ -43,13 +43,13 @@
         ];
 
         public function connectsTo() {
-            return $this->belongsToMany(User::class, 'connections', 'user_id', 'connected_user_id')
+            return $this->belongsToMany(User::class, 'connections', 'connected_user_id','user_id' )
                 ->withPivot('accepted')
                 ->withTimestamps();
         }
 
         public function connectsFrom() {
-            return $this->belongsToMany(User::class, 'connections', 'connected_user_id', 'user_id')
+            return $this->belongsToMany(User::class, 'connections', 'user_id','connected_user_id' )
                 ->withPivot('accepted')
                 ->withTimestamps();
         }

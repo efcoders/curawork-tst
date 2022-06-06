@@ -54,7 +54,39 @@ function confirmedConnections() {
     });
 }
 
+function requestConnect(user_id) {
+    $('#suggestion_box_' + user_id).remove();
+    postAjax('/connections', {user_id: user_id}, function (data) {
+        getConnectionCounts();
+    });
+}
 
+function withdrawRequest(user_id) {
+    if (confirm("Are you sure?")) {
+        deleteAjax('/connections/' + user_id, {}, function (data) {
+            $('#request_box_' + user_id).remove();
+            getConnectionCounts();
+        });
+    }
+    return false;
+}
+
+function acceptRequest(user_id) {
+    patchAjax('/connections/' + user_id, {}, function (data) {
+        $('#request_box_' + user_id).remove();
+        getConnectionCounts();
+    });
+}
+
+function removeConnection(id) {
+    if (confirm("Are you sure?")) {
+        $('#connection_box_' + id).remove();
+         deleteAjax('/connections/' + id, {'remove_connection':'Yes'}, function (data) {
+             getConnectionCounts();
+         });
+    }
+    return false;
+}
 
 function getConnectionCounts() {
     getAjax('/connection_counts', {}, function (data) {

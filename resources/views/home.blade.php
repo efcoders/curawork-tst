@@ -9,5 +9,6 @@
   <div class="container">
     <x-dashboard />
     @include('components.network_connections')
+      <input name="token" type="hidden" value="{!! csrf_token() !!}" id="token">
 </div>
 @endsection

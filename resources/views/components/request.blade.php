@@ -1,5 +1,5 @@
 @foreach($data as $user)
-<div class="my-2 shadow text-white bg-dark p-1" id="">
+<div class="my-2 shadow text-white bg-dark p-1" id="request_box_{{$user->id}}">
   <div class="d-flex justify-content-between">
     <table class="ms-1">
       <td class="align-middle">{{$user->name}}</td>
@@ -9,11 +9,9 @@
     </table>
     <div>
       @if ($mode == 'sent')
-        <button id="cancel_request_btn_" class="btn btn-danger me-1"
-          onclick="">Withdraw Request</button>
+        <button id="cancel_request_btn_" class="btn btn-danger me-1" onclick="withdrawRequest({{$user->id}})">Withdraw Request</button>
       @else
-        <button id="accept_request_btn_" class="btn btn-primary me-1"
-          onclick="">Accept</button>
+        <button id="accept_request_btn_" class="btn btn-primary me-1" onclick="acceptRequest({{$user->id}})">Accept</button>
       @endif
     </div>
   </div>

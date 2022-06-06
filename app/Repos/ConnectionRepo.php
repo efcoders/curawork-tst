@@ -21,12 +21,10 @@
             $allUserCount = User::where('id', '!=', $authUserId)->count();
 
             $connectionsCount = $authUser->confiremConnections()->count();
-            $pendingConnectionCount = $authUser->pendignConnections()->count();
+            $pendingConnectionCount = $authUser->pendingConnectsTo->count()+$authUser->pendingConnectsFrom->count();
             $sentRequestsCount = $authUser->pendingConnectsTo()->count();
             $receiveRequestsCount = $authUser->pendingConnectsFrom()->count();
-
             $suggestionsCount = $allUserCount - ($connectionsCount + $pendingConnectionCount);
-
             return [
                 'suggestionsCount' => $suggestionsCount,
                 'connectionsCount' => $connectionsCount,
@@ -60,9 +58,9 @@
          */
         public function sentRequest() {
             $authUser = auth()->user();
-            $data = User::join('connections', 'users.id', '=', 'connections.connected_user_id')
+            $data = User::join('connections', 'users.id', '=', 'connections.user_id')
                 ->where('connections.accepted', 0)
-                ->where('connections.user_id', '=', $authUser->id)
+                ->where('connections.connected_user_id', '=', $authUser->id)
                 ->select('users.*', 'connections.connected_user_id')
                 ->get();
             return $data;
@@ -73,9 +71,9 @@
          */
         public function receivedRequest() {
             $authUser = auth()->user();
-            $data = User::join('connections', 'users.id', '=', 'connections.user_id')
+            $data = User::join('connections', 'users.id', '=', 'connections.connected_user_id')
                 ->where('connections.accepted', 0)
-                ->where('connections.connected_user_id', '=', $authUser->id)
+                ->where('connections.user_id', '=', $authUser->id)
                 ->select('users.*', 'connections.user_id')
                 ->get();
             return $data;
@@ -89,15 +87,56 @@
             $data = User::join('connections', 'users.id', '=', 'connections.connected_user_id')
                 ->where('connections.accepted', 1)
                 ->where('connections.user_id', '=', $authUser->id)
-                ->select('users.*', 'connections.connected_user_id')
+                ->select('users.*', 'connections.id as connection_id')
                 ->get();
             $data1 = User::join('connections', 'users.id', '=', 'connections.user_id')
                 ->where('connections.accepted', 1)
                 ->where('connections.connected_user_id', '=', $authUser->id)
-                ->select('users.*', 'connections.user_id')
+                ->select('users.*', 'connections.id as connection_id')
                 ->get();
             $merged = $data1->merge($data);
             return $merged->all();
         }
 
+        public function storeConnect($request) {
+            $authUser = auth()->user();
+            $user_id = $request->user_id;
+            $connected_user_id = $authUser->id;
+            DB::table('connections')->insert([
+                'user_id' => $user_id,
+                'connected_user_id' => $connected_user_id
+            ]);
+        }
+
+        public function acceptConnect($id) {
+            $authUser = auth()->user();
+            $connected_user_id = $authUser->id;
+            DB::table('connections')
+                ->where('user_id', $authUser->id)
+                ->where('connected_user_id', $id)
+                ->update(['accepted' => 1]);
+        }
+
+        /**
+         * @param $id
+         * with draw request
+         */
+        public function withDrawRequest($id) {
+            $authUser = auth()->user();
+            $connected_user_id = $authUser->id;
+            DB::table('connections')
+                ->where('user_id', $id)
+                ->where('connected_user_id', $connected_user_id)
+                ->delete();
+        }
+
+        /**
+         * @param $id
+         * with draw request
+         */
+        public function removeConnection($id) {
+            DB::table('connections')
+                ->where('id', $id)
+                ->delete();
+        }
     }

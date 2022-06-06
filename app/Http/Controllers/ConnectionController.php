@@ -54,8 +54,31 @@
             return view('components.connection', compact(['data']));
         }
 
+        /**
+         * @param Request $request
+         * new connect request
+         */
+        public function store(Request $request){
+            $this->connectionRepo->storeConnect($request);
+        }
+
+        public function update($id){
+            $this->connectionRepo->acceptConnect($id);
+        }
+
+        /**
+         * @param $id
+         */
+        public function destroy($id,Request $request){
+            if ($request->has('remove_connection')) {
+                $this->connectionRepo->removeConnection($id);
+            } else {
+                $this->connectionRepo->withDrawRequest($id);
+            }
+        }
 
         public function connectionCounts() {
             return $this->connectionRepo->connectionCount();
         }
+
     }

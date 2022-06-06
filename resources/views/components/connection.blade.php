@@ -1,5 +1,5 @@
 @foreach($data as $user)
-<div class="my-2 shadow text-white bg-dark p-1" id="">
+<div class="my-2 shadow text-white bg-dark p-1" id="connection_box_{{$user->connection_id}}">
   <div class="d-flex justify-content-between">
     <table class="ms-1">
       <td class="align-middle">{{$user->name}}</td>
@@ -12,7 +12,7 @@
         data-bs-toggle="collapse" data-bs-target="#collapse_" aria-expanded="false" aria-controls="collapseExample">
         Connections in common (5)
       </button>
-      <button id="create_request_btn_" class="btn btn-danger me-1">Remove Connection</button>
+      <button id="create_request_btn_" class="btn btn-danger me-1" onclick="removeConnection({{$user->connection_id}})">Remove Connection</button>
     </div>
 
   </div>

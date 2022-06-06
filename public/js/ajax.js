@@ -28,6 +28,34 @@ postAjax = function (url, data, success) {
     });
 };
 
+patchAjax = function (url, data, success) {
+    var dataPeramiter = '';
+    token = $('#token').val();
+    for (var key in data) {
+        if (data.hasOwnProperty(key)) {
+            newkey = key + '=' + data[key] + '&';
+            dataPeramiter += newkey;
+        }
+    }
+    dataPeramiter += '_token=' + token + '&_method=PATCH';
+    $.ajax({
+        type: "post",
+        url: url,
+        data: dataPeramiter,
+        cache: false,
+        success: function (data) {
+            if (success) {
+                success(data);
+            }
+            return data;
+        },
+        error: function (xhr, status, error) {
+            console.log(xhr.responseText)
+        }
+    });
+};
+
+
 
 deleteAjax = function (url, data, success) {
     var dataPeramiter = '';
